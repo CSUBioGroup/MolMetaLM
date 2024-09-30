@@ -1,7 +1,7 @@
 # MolMetaLM: a Physicochemical Knowledge-Guided Molecular Meta Language Model
 
 ## Overview
-MolMetaLM is a universal molecular language model based on molecular meta language covering physicochemical knowledge. The molecular meta language is formatted as multiple <S,P,O> knowledge triples sharing the same S to enhance learning the semantic relationships between physicochemical knowledge and molecules. By replacing the P and O with different molecular physicochemical properties, fingerprints, or conformation coordinates, the meta language paradigm generates tens of thousands of pretraining tasks. By recovering the token/sequence/order-level noise, MolMetaLM exhibits proficiency in large-scale benchmark evaluations involving property prediction, molecule generation, conformation inference, and molecular optimization.
+<p>MolMetaLM is a universal molecular language model based on molecular meta language covering physicochemical knowledge. The molecular meta language is formatted as multiple <S,P,O> knowledge triples sharing the same S to enhance learning the semantic relationships between physicochemical knowledge and molecules. By replacing the P and O with different molecular physicochemical properties, fingerprints, or conformation coordinates, the meta language paradigm generates tens of thousands of pretraining tasks. By recovering the token/sequence/order-level noise, MolMetaLM exhibits proficiency in large-scale benchmark evaluations involving property prediction, molecule generation, conformation inference, and molecular optimization.</p>
 
 ![image](https://github.com/CSUBioGroup/MolMetaLM/blob/main/figures/framework.png)
 
