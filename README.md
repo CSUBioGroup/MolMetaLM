@@ -5,7 +5,7 @@
 ## Usage
 ### 1. Train your own MolMetaLM (optional)
 #### 1.1 prepare your own dataset for pretraining
-The file only needs to contain the SMILES of the molecule, one molecular SMILES per line (refer to ./datasets/smiles.txt).
+The file only needs to contain the SMILES of the molecule, one molecular SMILES per line (refer to datasets/smiles.txt).
 
 #### 1.2 pretrain MolMetaLM
 
