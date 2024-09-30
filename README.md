@@ -28,7 +28,7 @@ generate molecules based on query molecule:
 ```python
 # molecular generation based on query molecule
 # param method: `structure` for query molecular backbone-based generation; `fingerprint` for query molecular fingerprint-based generation
-python molecule_generate_based_on_query.py --input C --output ./cache \
+python molecule_generate_based_on_query.py --input COc1cccc(/C=N/N2C(=O)c3ccccc3C2=O)c1OC  --output ./cache \
                                            --method structure --topK 10
 ```
 
@@ -71,7 +71,7 @@ config = AutoConfig.from_pretrained("./bertModel/cus-llama2-base", trust_remote_
 backbone = MolMetaLM(config, tkn2id, maxGenLen=512).cuda()
 model = HuggingfaceSeq2SeqLanguageModel(backbone, collateFunc=collater, AMP=True)
 
-model.load('./saved_models/MolMetaLM_base_0.842.pkl')
+model.load('path to your pretrained weight')
 
 tokenizer = collater.tokenizer
 model = model.model
