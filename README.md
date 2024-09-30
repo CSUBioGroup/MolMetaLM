@@ -88,6 +88,12 @@ print(emb_smi.shape) # batch size, seq length, embedding size
 
 molecule conditional generation:
 ```python
+import re
+def analysis_property_form_mol(m, s):
+    res = []
+    for f in [re.findall('\[RDKit:(.*?)\]', i)[0] for i in re.findall('(\[RDKit:[0-9a-zA-Z]*?\][0-9.\s]+?);', s)]:
+        res.append( f"[RDKit:{f}] "+" ".join(list(f"{getattr(Descriptors, f)(m):.3f}")))
+    return res
 source = ["[sGLM_smi] [SPAN] [SEP] [RDKit:NumAromaticRings] 1 0 . 0 0 0 ; [RDKit:MolWt] 6 3 6. 0 0 0 ; [SOS]"]
 batch = tokenizer(source, return_tensors='pt', max_length=512, padding='longest', truncation=True, return_token_type_ids=False)
 target_pre = tokenizer.batch_decode(model.generate(**batch, max_length=512))[0]
