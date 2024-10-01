@@ -36,7 +36,7 @@ b) generate molecules based on query molecule:
 ```python
 # molecular generation based on query molecule
 # param method: `structure` for query molecular backbone-based generation; `fingerprint` for query molecular fingerprint-based generation
-python molecule_generate_based_on_query.py --input COc1cccc(/C=N/N2C(=O)c3ccccc3C2=O)c1OC  --output ./cache \
+python molecule_generate_based_on_query.py --input "COc1cccc(/C=N/N2C(=O)c3ccccc3C2=O)c1OC"  --output ./cache \
                                            --method structure --topK 10
 ```
 
