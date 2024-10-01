@@ -87,6 +87,7 @@ model = model.model
 
 Then we can further investigate or use MolMetaLM as the same as other huggingface pre-trained models.
 We also provide some example codes:
+
 a) obtain molecular representation:
 ```python
 smi = "COc1cc2c(cc1OC)CC([NH3+])C2"
