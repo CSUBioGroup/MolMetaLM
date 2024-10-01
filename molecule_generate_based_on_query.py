@@ -91,18 +91,19 @@ if __name__=='__main__':
             if gen_mol is not None and (Chem.MolToSmiles(gen_mol, doRandom=False, canonical=True)!=ref_smi):
                 break
 
-        if len(gen_mol.GetAtoms())==len(mol.GetAtoms()):
-            conf = Chem.Conformer(gen_mol.GetNumAtoms())
-            for i in range(len(xyzArr)):
-                conf.SetAtomPosition(i, (xyzArr[i]).tolist())
-            gen_mol.AddConformer(conf)
-            gen_mol = Chem.AddHs(gen_mol, addCoords=True)
-        else:
-            gen_mol = Chem.AddHs(gen_mol)
-            AllChem.EmbedMolecule(gen_mol)
-        
-        AllChem.MMFFOptimizeMolecule(gen_mol)
-        gen_mol = AllChem.RemoveHs(gen_mol)
+        if args.method=='structure':
+            if len(gen_mol.GetAtoms())==len(mol.GetAtoms()):
+                conf = Chem.Conformer(gen_mol.GetNumAtoms())
+                for i in range(len(xyzArr)):
+                    conf.SetAtomPosition(i, (xyzArr[i]).tolist())
+                gen_mol.AddConformer(conf)
+                gen_mol = Chem.AddHs(gen_mol, addCoords=True)
+            else:
+                gen_mol = Chem.AddHs(gen_mol)
+                AllChem.EmbedMolecule(gen_mol)
+            
+            AllChem.MMFFOptimizeMolecule(gen_mol)
+            gen_mol = AllChem.RemoveHs(gen_mol)
 
         fpr_gen = AllChem.GetMACCSKeysFingerprint(gen_mol)
         sim = rdkit.DataStructs.TanimotoSimilarity(fpr_ref,fpr_gen)
