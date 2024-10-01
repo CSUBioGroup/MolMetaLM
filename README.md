@@ -24,14 +24,15 @@ python pretrain_MolMetaLM.py --maxSteps 1000 --warmupSteps 100 --dataset ./datas
 ```
 
 ### 2. Use MolMetaLM for downstream applicaitons
-#### 2.1 via scripts
 
-obtain molecular representation:
+After training, MolMetaLM can be used to:
+#### 2.1 via scripts
+a) obtain molecular representation:
 ```python
 python molecule_embedding.py --input_file ./datasets/smiles.txt --output_file ./cache/smiles.pkl
 ```
 
-generate molecules based on query molecule:
+b) generate molecules based on query molecule:
 ```python
 # molecular generation based on query molecule
 # param method: `structure` for query molecular backbone-based generation; `fingerprint` for query molecular fingerprint-based generation
@@ -39,14 +40,14 @@ python molecule_generate_based_on_query.py --input COc1cccc(/C=N/N2C(=O)c3ccccc3
                                            --method structure --topK 10
 ```
 
-finetune MolMetaLM for MoleculeNet classification tasks:
+c) finetune MolMetaLM for MoleculeNet classification tasks:
 ```python
 # param datasets: UniMol_PCBA,UniMol_MUV,UniMol_HIV,UniMol_BACE,UniMol_BBBP,UniMol_Tox21,UniMol_ToxCast,UniMol_SIDER,UniMol_ClinTox
 python -u finetune_main_final.py --datasets "UniMol_BBBP" \
                                  --taskType "classification" --modelType "llama2-base"
 ```
 
-finetune MolMetaLM for GPCR-related activity or AGBT's regression tasks:
+d) finetune MolMetaLM for GPCR-related activity or AGBT's regression tasks:
 ```python
 # param datasets: GPCR_5HT1A,GPCR_5HT2A,GPCR_AA1R,GPCR_AA2AR,GPCR_AA3R,GPCR_CNR2,GPCR_DRD2,GPCR_DRD3,GPCR_HRH3,GPCR_OPRM,
 #                 AGBT_LD50,AGBT_IGC50,AGBT_LC50,AGBT_LC50DM,AGBT_LogP,AGBT_FreeSolv,AGBT_Lipophilicity
@@ -54,9 +55,9 @@ python -u finetune_main_final.py --datasets "GPCR_5HT1A" \
                                  --taskType "regression" --modelType "llama2-base"
 ```
 
+Or do more detailed development based on MolMetaLM:
 #### 2.2 via codes
-
-prepare the pretrained MolMetaLM from huggingface:
+Firstly, we need to prepare the pretrained MolMetaLM from huggingface:
 ```python
 from transformers import AutoTokenizer, AutoModel, AutoModelForCausalLM
 tokenizer = AutoTokenizer.from_pretrained('wudejian789/MolMetaLM-base')
@@ -84,7 +85,9 @@ tokenizer = collater.tokenizer
 model = model.model
 ```
 
-obtain molecular embedding:
+Then we can further investigate or use MolMetaLM as the same as other huggingface pre-trained models.
+We also provide some example codes:
+a) obtain molecular representation:
 ```python
 smi = "COc1cc2c(cc1OC)CC([NH3+])C2"
 tokenized_smi = tokenizer(" ".join(list(smi)), return_token_type_ids=False, 
@@ -93,7 +96,7 @@ emb_smi = model.model(**tokenized_smi).last_hidden_state
 print(emb_smi.shape) # batch size, seq length, embedding size
 ```
 
-molecule conditional generation:
+b) generate molecules conditioned by multiple properties:
 ```python
 import re
 def analysis_property_form_mol(m, s):
@@ -110,7 +113,7 @@ print("generated smiles:",smiles)
 print('properties:', analysis_property_form_mol(mol, source[0]))
 ```
 
-molecular optimization:
+c) optimize molecules based on multiple properties:
 ```python
 from rdkit import DataStructs
 ref_smi = "O=C(N[C@@H](C(=O)[O-])c1ccccc1)C1CCC(CNC(=O)[C@@H]2Cc3ccccc3C[NH2+]2)CC1"
@@ -147,7 +150,7 @@ for pro in proList:
     print(pro, ':', func(ref_mol)-func(mol_opted))
 ```
 
-molecular conformation prediction:
+d) predict molecular conformation:
 ```python
 # Note: the length of the structural sequence of large molecules will be too large, beyond the preset sequence length of 512. 
 #       therefore, the current model is very unstable when predicting conformation for big molecules (whose num of atoms>20).
