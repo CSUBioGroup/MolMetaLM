@@ -43,7 +43,7 @@ def unpack_sequence(values: np.ndarray, offsets: np.ndarray, index: int) -> np.n
     return values[off0:off1]
 
 class DataClass_normal(Dataset):
-    def __init__(self, path):
+    def __init__(self, path, randomSMILES=True):
         self.path = path
         print('loading...')
         with open(path, 'r') as f:
@@ -51,18 +51,22 @@ class DataClass_normal(Dataset):
         print('packing...')
         self.len = len(smiles)
         self.smiles_v,self.smiles_o = pack_sequences(smiles)
+        self.randomSMILES = randomSMILES
     def __len__(self):
         return self.len
     def __getitem__(self, index):
         smiles = sequence_to_string(unpack_sequence(self.smiles_v, self.smiles_o, index))
-        
+
         mol = Chem.MolFromSmiles(smiles) if len(smiles)>0 else None
-        try:
-            smi = Chem.MolToSmiles(mol, doRandom=True, canonical=False, isomericSmiles=True) if mol is not None else ""
-            mol = Chem.MolFromSmiles(smi) if len(smi)>0 else None
-        except:
+        if self.randomSMILES:
+            try:
+                smi = Chem.MolToSmiles(mol, doRandom=True, canonical=False, isomericSmiles=True) if mol is not None else ""
+                mol = Chem.MolFromSmiles(smi) if len(smi)>0 else None
+            except:
+                smi = smiles
+                gc.collect()
+        else:
             smi = smiles
-            gc.collect()
         return {'smiles':smi, \
                 'mol':mol}
 
@@ -855,6 +859,20 @@ class HuggingfaceNoisingCollateFunc_final: # for GPT
 
         return strategies, source_smiles,source_properties,source_values,target_smiles,target_properties,target_values
 
+class InferenceCollateFunc:
+    def __init__(self, bertDir, seqMaxLen, prompt):
+        self.tokenizer = AutoTokenizer.from_pretrained(bertDir, trust_remote_code=True, do_lower_case=False)
+        self.seqMaxLen = seqMaxLen
+        self.prompt = prompt
+        self.padding = 'max_length'
+    def __call__(self, data):
+        source = [self.prompt.replace('[SMILES]', " ".join(list(i['smiles']))) for i in data]
+        batch = self.tokenizer(source, return_tensors='pt', max_length=self.seqMaxLen, padding=self.padding, truncation=True)
+        if 'token_type_ids' in batch:
+            batch.pop('token_type_ids')
+
+        return {'batch':batch}
+
 class FinetuneCollateFunc_final:
     def __init__(self, bertDir, seqMaxLen, prompt, normVec=None, randomSMILES=True, 
                  useStructure=False, seq2seq=False, use_all=False, use_graph=False):
@@ -885,7 +903,7 @@ class FinetuneCollateFunc_final:
             source = [s.replace('[(DDD)STRUCTURE]'," ".join([f"[(DDD)ATOM:{a.GetSymbol()}]" for a in mol.GetAtoms() if a.GetSymbol()!='H'])) \
                        .replace('[(AAD)STRUCTURE]'," ".join([f"[(AAD)ATOM:{a.GetSymbol()}]" for a in mol.GetAtoms() if a.GetSymbol()!='H'])) \
                        .replace('[(XYZ)STRUCTURE]'," ".join([f"[(XYZ)ATOM:{a.GetSymbol()}]" for a in mol.GetAtoms() if a.GetSymbol()!='H'])) for s,mol in zip(source,molList)]
-        
+
         if isinstance(data[0]['y'], list):
             target = ["[SEP] " + " ".join(sum([list(f"{v:.3f}")+[';'] for v in i['y']],[])) + " [EOS]" for i in data]
         else:

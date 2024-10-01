@@ -7,6 +7,7 @@ import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument('--input', type=str)
 parser.add_argument('--output', type=str)
+parser.add_argument('--pretrainPath', default='', type=str)
 parser.add_argument('--method', type=str, default='structure', choices=['structure','fingerprint'])
 parser.add_argument('--topK', type=int, default=10)
 args = parser.parse_args()
@@ -23,10 +24,14 @@ if __name__=='__main__':
     tkn2id = collater.tokenizer.get_vocab()
     config = AutoConfig.from_pretrained("./bertModel/cus-llama2-base", trust_remote_code=True, use_flash_attention_2=True)
     
-    backbone = UniMolGLM3(config, tkn2id, maxGenLen=512).cuda()
-    model = HuggingfaceSeq2SeqLanguageModel3(backbone, collateFunc=collater, AMP=True)
+    backbone = MolMetaLM(config, tkn2id, maxGenLen=512).cuda()
+    model = HuggingfaceSeq2SeqLanguageModel(backbone, collateFunc=collater, AMP=True)
     backbone.alwaysTrain = False
-    model.load('./saved_models/pretrained/llama2_pubchem_base_acc0.384_swa10_s1700k_1800k.pkl')
+    
+    if len(args.pretrainPath)>0:
+        model.load(args.pretrainPath)
+    else:
+        model.model.backbone = AutoModelForCausalLM.from_pretrained('wudejian789/MolMetaLM-base').cuda()
     model.to_eval_mode()
 
     if args.input.endswith('.sdf') or args.input.endswith('.mol'):

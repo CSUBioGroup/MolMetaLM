@@ -183,8 +183,10 @@ if __name__ == '__main__':
                             backbone = MolMetaLM_finetune_Alpha(config, tkn2id, classNum=len(totalDS[0]['y']), classifierType=args.classifierType, dropout=dp).cuda()
                             stepsPerEpoch = len(trainDS)//bs
                             backbone.alwaysTrain = True
-                            
-                            if len(args.pretrainPath)>0:
+
+                            if args.pretrainPath.startswith('wudejian789/'):
+                                backbone.backbone = AutoModelForCausalLM.from_pretrained(args.pretrainPath).cuda()
+                            elif len(args.pretrainPath)>0:
                                 parameters = torch.load(args.pretrainPath)
                                 backbone.load_state_dict(parameters['model'], strict=False)
                                 print("%d epochs and %.3lf val Score 's model load finished."%(parameters['epochs'], parameters['bestMtc'] if parameters['bestMtc'] is not None else 0.00))
@@ -283,8 +285,10 @@ if __name__ == '__main__':
             backbone = MolMetaLM_finetune_Alpha(config, tkn2id, classNum=len(totalDS[0]['y']), classifierType=args.classifierType, dropout=dp).cuda()
             stepsPerEpoch = len(trainDS)//bs
             backbone.alwaysTrain = True
-            
-            if len(args.pretrainPath)>0:
+
+            if args.pretrainPath.startswith('wudejian789/'):
+                backbone.backbone = AutoModelForCausalLM.from_pretrained(args.pretrainPath).cuda()
+            elif len(args.pretrainPath)>0:
                 parameters = torch.load(args.pretrainPath)
                 backbone.load_state_dict(parameters['model'], strict=False)
                 print("%d epochs and %.3lf val Score 's model load finished."%(parameters['epochs'], parameters['bestMtc'] if parameters['bestMtc'] is not None else 0.00))

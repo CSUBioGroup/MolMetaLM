@@ -3,6 +3,7 @@ import argparse,os,pickle,datetime
 parser = argparse.ArgumentParser()
 parser.add_argument('--input_file')
 parser.add_argument('--output_file')
+parser.add_argument('--pretrainPath', default='', type=str)
 
 parser.add_argument('--batch_size', type=int, default=16)
 parser.add_argument('--num_workers', type=int, default=4)
@@ -29,23 +30,27 @@ if __name__=='__main__':
 
     collater = HuggingfaceNoisingCollateFunc_final(bertDir='./bertModel/Tokenizer_final', seqMaxLen=512, k=64)
     tkn2id = collater.tokenizer.get_vocab()
-    finetuneCollater = FinetuneCollateFunc_final(bertDir='./bertModel/Tokenizer_final', seqMaxLen=512, \
-                                                 prompt="[SMILES]", randomSMILES=False)
+    finetuneCollater = InferenceCollateFunc(bertDir='./bertModel/Tokenizer_final', seqMaxLen=512, \
+                                            prompt="[SMILES]")
 
     config = AutoConfig.from_pretrained("./bertModel/cus-llama2-base", trust_remote_code=True, use_flash_attention_2=True)
-    backbone = UniMolGLM3(config, tkn2id, maxGenLen=512).cuda()
+    backbone = MolMetaLM(config, tkn2id, maxGenLen=512).cuda()
     backbone.alwaysTrain = False
     
     if ddp:
         backbone = torch.nn.parallel.DistributedDataParallel(backbone, device_ids=[args.local_rank], output_device=args.local_rank, find_unused_parameters=True) #
 
-    model = HuggingfaceSeq2SeqLanguageModel3(backbone, collateFunc=finetuneCollater, AMP=True, DDP=ddp)
+    model = HuggingfaceSeq2SeqLanguageModel(backbone, collateFunc=finetuneCollater, AMP=True, DDP=ddp)
 
-    model.load('./saved_models/pretrained/llama2_pubchem_base_acc0.384_swa10_s1700k_1800k.pkl')
+    if len(args.pretrainPath)>0:
+        model.load(args.pretrainPath)
+    else:
+        model.model.backbone = AutoModelForCausalLM.from_pretrained('wudejian789/MolMetaLM-base').cuda()
+        
     model.to_eval_mode()
-    finetuneCollater.train = True
+    finetuneCollater.padding = 'longest'
 
-    dataset = DataClass_normal(args.input_file)
+    dataset = DataClass_normal(args.input_file, randomSMILES=False)
     
     if ddp:
         validSampler = torch.utils.data.distributed.DistributedSampler(dataset, shuffle=False)
