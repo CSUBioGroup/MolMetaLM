@@ -168,4 +168,5 @@ target_pre = tokenizer.batch_decode(model.generate(**batch, max_length=512, do_s
 sIdx,eIdx = target_pre.find('[SOS] [SEP]')+12,target_pre.find('[EOS]')
 tmp = [[float(j) for j in i.split(',')] for i in target_pre[sIdx:eIdx].replace(' ','').split(';')[:-1]]
 xyzArr_pre = xyzDecode(np.array(tmp), stType=stType, eps=1e-8) # num of atoms, 3
+print(xyzArr_pre)
 ```
