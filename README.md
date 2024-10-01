@@ -8,7 +8,14 @@ MolMetaLM is a universal molecular language model based on molecular meta langua
 ## Usage
 ### 1. Train your own MolMetaLM (optional)
 #### 1.1 prepare your own dataset for pretraining
-The file only needs to contain the SMILES of the molecule, one molecular SMILES per line (refer to datasets/smiles.txt).
+The file only needs to contain the SMILES of molecules, one molecular SMILES per line:
+```python
+CC(=O)OC(CC(=O)[O-])C[N+](C)(C)C
+C1=CC(C(C(=C1)C(=O)O)O)O
+CC(CN)O
+C1=CC(=C(C=C1[N+](=O)[O-])[N+](=O)[O-])Cl
+...
+```
 
 #### 1.2 pretrain MolMetaLM
 
