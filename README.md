@@ -156,18 +156,5 @@ target_pre = tokenizer.batch_decode(model.generate(**batch, max_length=512, do_s
 
 sIdx,eIdx = target_pre.find('[SOS] [SEP]')+12,target_pre.find('[EOS]')
 tmp = [[float(j) for j in i.split(',')] for i in target_pre[sIdx:eIdx].replace(' ','').split(';')[:-1]]
-xyzArr_pre = xyzDecode(np.array(tmp), stType=stType, eps=1e-8) # , eps=-1
-with open('./cache/conformation_pre.mol', 'w') as f:
-    s = Chem.MolToMolBlock(mol)
-    xyzList = re.findall("([-\s][0-9]+\.[0-9]+)", s)
-    start = 0
-    for xyz,xyz_ in zip(xyzList,xyzArr_pre.reshape(-1)):
-        assert len(xyz)>=7
-        l = len(xyz)
-        idx = s[start:].find(xyz) + start
-        xyz_ = f"{xyz_:10.4f}"[-l:]
-        c = len(xyz_) - l
-        s = s[:idx-c] + xyz_ + s[idx+l:]
-        start = idx+l
-    f.write(s)
+xyzArr_pre = xyzDecode(np.array(tmp), stType=stType, eps=1e-8) # num of atoms, 3
 ```
