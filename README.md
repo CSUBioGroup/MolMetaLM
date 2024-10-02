@@ -5,7 +5,7 @@ MolMetaLM is a universal molecular language model based on molecular meta langua
 
 ![image](https://github.com/CSUBioGroup/MolMetaLM/blob/main/figures/framework.png)
 
-## Dataset
+## Datasets
 ### 1. PubChem for pretraining MolMetaLM
 A dataset containing 110M molecular SMILES: [https://ftp.ncbi.nlm.nih.gov/pubchem/Compound/Extras/CID-SMILES.gz](https://ftp.ncbi.nlm.nih.gov/pubchem/Compound/Extras/CID-SMILES.gz)
 
@@ -17,6 +17,13 @@ Download from Google Drive: [https://drive.google.com/file/d/1azyIzIJHw0FvmIPlyL
 Please put the extracted folder AGBT,GPCR,UniMol in "datasets/...".
 
 ## Usage
+### Requirements
+- scikit-learn==1.4.0
+- torch==2.3.1
+- transformers==4.38.2
+- rdkit==2023.9.5
+- deepchem==2.8.0
+
 ### 1. Train your own MolMetaLM (optional)
 #### 1.1 prepare dataset for pretraining
 The file only needs to contain the SMILES of molecules, one molecular SMILES per line:
