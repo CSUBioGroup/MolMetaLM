@@ -5,9 +5,18 @@ MolMetaLM is a universal molecular language model based on molecular meta langua
 
 ![image](https://github.com/CSUBioGroup/MolMetaLM/blob/main/figures/framework.png)
 
+## Dataset
+### PubChem for pretraining MolMetaLM
+A dataset containing 110M molecular SMILES: [https://ftp.ncbi.nlm.nih.gov/pubchem/Compound/Extras/CID-SMILES.gz](https://ftp.ncbi.nlm.nih.gov/pubchem/Compound/Extras/CID-SMILES.gz)
+Please put the extracted file "CID-SMILES" into "datasets/PubChem/CID-SMILES". 
+
+### Benchmark datasets for evaluating MolMetaLM
+Download from Google Drive: [https://drive.google.com/file/d/1azyIzIJHw0FvmIPlyLKE27sTpB_AGtqE/view?usp=drive_link](https://drive.google.com/file/d/1azyIzIJHw0FvmIPlyLKE27sTpB_AGtqE/view?usp=drive_link)
+Please put the extracted folder AGBT,GPCR,UniMol in "datasets/...".
+
 ## Usage
 ### 1. Train your own MolMetaLM (optional)
-#### 1.1 prepare your own dataset for pretraining
+#### 1.1 prepare dataset for pretraining
 The file only needs to contain the SMILES of molecules, one molecular SMILES per line:
 ```python
 CC(=O)OC(CC(=O)[O-])C[N+](C)(C)C
@@ -17,11 +26,14 @@ C1=CC(=C(C=C1[N+](=O)[O-])[N+](=O)[O-])Cl
 ...
 ```
 
+or you can also follow us and download the [PubChem](https://ftp.ncbi.nlm.nih.gov/pubchem/Compound/Extras/CID-SMILES.gz) dataset (containing 110M molecular SMILES) for pretraining and 
 #### 1.2 pretrain MolMetaLM
 
 ```python
 python pretrain_MolMetaLM.py --maxSteps 1000 --warmupSteps 100 --dataset ./datasets/smiles.txt --model_size base
 ```
+
+For PubChem datasets, set param 'dataset' to 'pubchem'. 
 
 ### 2. Use MolMetaLM for downstream applicaitons
 
