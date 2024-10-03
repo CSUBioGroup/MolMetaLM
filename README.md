@@ -44,7 +44,7 @@ python pretrain_MolMetaLM.py --maxSteps 1000 --warmupSteps 100 --dataset ./datas
 
 For PubChem datasets, set param 'dataset' to 'pubchem'; 
 
-For multi nodes/cards training, set param 'ddp' to 'true' and follow the DistributedDataParallel's command in Pytorch for ddp training.
+For multi nodes/cards training, set param 'ddp' to 'true' and follow the DistributedDataParallel's command (torchrun --nproc_per_node xxx) in Pytorch for ddp training.
 
 ### 2. Use MolMetaLM for downstream applicaitons
 
