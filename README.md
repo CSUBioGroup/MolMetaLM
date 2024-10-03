@@ -135,6 +135,9 @@ print("generated smiles:",smiles)
 print('properties:', analysis_property_form_mol(mol, source[0]))
 ```
 
+the "[RDKit:xxx]" in var source can be replaced with other properties (see all of the supported properties by "print(pickle.load(open('RDKit_DescriptorsAttrs.pkl','rb')))").
+currently, MolMetaLM supports conditional generation of up to 64 properties simultaneously.
+
 c) optimize molecules based on multiple properties:
 ```python
 from rdkit import DataStructs
