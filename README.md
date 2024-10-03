@@ -42,7 +42,7 @@ or you can also follow us and download the [PubChem](https://ftp.ncbi.nlm.nih.go
 python pretrain_MolMetaLM.py --maxSteps 1000 --warmupSteps 100 --dataset ./datasets/smiles.txt --model_size base
 ```
 
-For PubChem datasets, set param 'dataset' to 'pubchem'. 
+For PubChem datasets, set param 'dataset' to 'pubchem'; for multi nodes/cards training, set param 'ddp' to 'true' and follow the DistributedDataParallel's command in Pytorch for ddp training.
 
 ### 2. Use MolMetaLM for downstream applicaitons
 
