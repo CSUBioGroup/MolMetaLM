@@ -46,7 +46,7 @@ For PubChem datasets, set param 'dataset' to 'pubchem';
 
 For multi nodes/cards training, set param 'ddp' to 'true' and follow the DistributedDataParallel's command in Pytorch for ddp training:
 ```python
-torchrun --nproc_per_node xxx pretrain_MolMetaLM.py ...
+torchrun --nproc_per_node xxx pretrain_MolMetaLM.py --ddp true ...
 ```
  
 ### 2. Use MolMetaLM for downstream applicaitons
